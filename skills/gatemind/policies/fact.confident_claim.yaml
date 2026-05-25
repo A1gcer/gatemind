@@ -1,0 +1,33 @@
+id: gate.fact.confident_claim_without_source
+name: 自信陈述来源检查
+category: fact
+phase: pre_response
+priority: P2
+severity: medium
+lifecycle:
+  status: active
+decision:
+  on_fail: require_evidence
+message: "检测到具体技术参数/数据陈述但未标注来源。涉及具体数字或产品参数时请标注来源或明确说「不确定」。"
+check:
+  kind: confident_claim_without_source
+  args:
+    claim_patterns:
+      - "\\d+%"
+      - "默认 .*?\\d+"
+      - "temperature.*?\\d\\.\\d"
+      - "\\d+[ 万]*token"
+      - "上下文.*?\\d+"
+      - "上下文窗口"
+    source_markers:
+      - "根据"
+      - "官方"
+      - "文档"
+      - "官网"
+      - "来源"
+      - "我查"
+      - "实测"
+      - "搜索"
+      - "查阅"
+      - "不确定"
+      - "推测"

@@ -5,12 +5,34 @@ from .utils import PRIORITY_RANK
 def _guess_without_evidence(ctx: dict, args: dict) -> tuple[bool, str]:
     draft = ctx.get("draft_response", "") or ""
     guess_words = args.get("guess_words", ["可能", "大概", "应该", "我猜", "maybe", "probably"])
-    evidence_words = args.get("evidence_words", ["根据", "证据", "日志", "来源", "数据", "I checked", "from"])
+    evidence_words = args.get("evidence_words", ["根据", "证据", "日志", "来源", "数据", "I checked", "from", "官方", "文档", "官网", "实测", "测试"])
 
     hit_guess = any(w in draft for w in guess_words)
     hit_evidence = any(w in draft for w in evidence_words)
     failed = hit_guess and not hit_evidence
     return failed, "检测到推测表达但缺少依据标记"
+
+
+def _confident_claim_without_source(ctx: dict, args: dict) -> tuple[bool, str]:
+    """检测自信陈述（数字/参数/配置）但未标注来源"""
+    draft = ctx.get("draft_response", "") or ""
+    # 技术细节特征：百分比、默认值、token数、参数范围
+    claim_patterns = args.get("claim_patterns", [
+        r"\d+%",       # 百分比
+        r"默认 .*?\d+",  # 默认值
+        r"temperature.*?\d\.\d",  # 参数值
+        r"\d+[ 万]*token",  # token数
+        r"上下文.*?\d+",  # 上下文长度
+        r"上下文窗口",
+    ])
+    source_markers = args.get("source_markers", [
+        "根据", "官方", "文档", "官网", "来源", "我查", "实测",
+        "搜索", "查阅", "不确定", "推测"
+    ])
+    has_claim = any(re.search(p, draft) for p in claim_patterns)
+    has_source = any(m in draft for m in source_markers)
+    failed = has_claim and not has_source
+    return failed, "检测到具体技术陈述但未标注来源或不确定性"
 
 
 def _time_without_timezone(ctx: dict, args: dict) -> tuple[bool, str]:
@@ -137,6 +159,7 @@ def _constraint_filter_skip(ctx: dict, args: dict) -> tuple[bool, str]:
 
 EVALUATORS = {
     "guess_without_evidence": _guess_without_evidence,
+    "confident_claim_without_source": _confident_claim_without_source,
     "time_without_timezone": _time_without_timezone,
     "long_document_without_intent": _long_document_without_intent,
     "high_risk_action_without_confirm": _high_risk_action_without_confirm,
