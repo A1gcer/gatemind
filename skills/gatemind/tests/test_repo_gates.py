@@ -7,29 +7,56 @@ sys.path.insert(0, str(BASE))
 from core.runner import run_gates
 
 
-def test_repo_forbidden():
+def test_repo_forbidden_private_policy():
+    """GateMind 公共仓禁止私仓策略"""
     ctx = {
         "repo_type": "public",
-        "staged_files": ["distribution/a.txt", "content/a.md"],
+        "staged_files": ["skills/gatemind/policies/private/my_policy.yaml", "README.md"],
         "file_contents": {}
     }
     out = run_gates(str(BASE), "pre_commit", ctx)
     assert out["decision"]["status"] in ("block", "warn")
-    print("✅ test_repo_forbidden passed")
+    print("✅ test_repo_forbidden_private_policy passed")
 
 
-def test_repo_clean():
+def test_repo_forbidden_logs():
+    """GateMind 公共仓禁止真实日志"""
     ctx = {
         "repo_type": "public",
-        "staged_files": ["content/published/faq-001.md"],
+        "staged_files": ["skills/gatemind/logs/gate_events.jsonl"],
         "file_contents": {}
     }
     out = run_gates(str(BASE), "pre_commit", ctx)
-    print(f"    status={out['decision']['status']}, passed={out['decision']['status'] == 'allow'}")
+    assert out["decision"]["status"] in ("block", "warn")
+    print("✅ test_repo_forbidden_logs passed")
+
+
+def test_repo_forbidden_configs():
+    """GateMind 公共仓禁止私有配置"""
+    ctx = {
+        "repo_type": "public",
+        "staged_files": ["configs/private_constraints.yaml", "README.md"],
+        "file_contents": {}
+    }
+    out = run_gates(str(BASE), "pre_commit", ctx)
+    assert out["decision"]["status"] in ("block", "warn")
+    print("✅ test_repo_forbidden_configs passed")
+
+
+def test_repo_clean():
+    """干净提交应放行"""
+    ctx = {
+        "repo_type": "public",
+        "staged_files": ["README.md", "skills/gatemind/core/runner.py", "skills/gatemind/policies/fact.guess.yaml"],
+        "file_contents": {}
+    }
+    out = run_gates(str(BASE), "pre_commit", ctx)
+    assert out["decision"]["status"] == "allow"
     print("✅ test_repo_clean passed")
 
 
 def test_secret_scan():
+    """密钥扫描应拦截"""
     ctx = {
         "repo_type": "public",
         "staged_files": ["config/settings.py"],
@@ -38,12 +65,27 @@ def test_secret_scan():
         }
     }
     out = run_gates(str(BASE), "pre_commit", ctx)
-    print(f"    status={out['decision']['status']}")
-    print("✅ test_secret_scan triggered")
+    assert out["decision"]["status"] == "block"
+    print("✅ test_secret_scan passed")
+
+
+def test_learnings_forbidden():
+    """GateMind 公共仓禁止 .learnings/"""
+    ctx = {
+        "repo_type": "public",
+        "staged_files": [".learnings/delta_log.jsonl"],
+        "file_contents": {}
+    }
+    out = run_gates(str(BASE), "pre_commit", ctx)
+    assert out["decision"]["status"] in ("block", "warn")
+    print("✅ test_learnings_forbidden passed")
 
 
 if __name__ == "__main__":
-    test_repo_forbidden()
+    test_repo_forbidden_private_policy()
+    test_repo_forbidden_logs()
+    test_repo_forbidden_configs()
     test_repo_clean()
     test_secret_scan()
+    test_learnings_forbidden()
     print("\n🎉 All repo gate tests passed!")
