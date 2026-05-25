@@ -1,0 +1,29 @@
+name: GateMind GitOps Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  pre-commit-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          pip install -e .
+
+      - name: Stage all files
+        run: git add -A
+
+      - name: Run GateMind pre_commit
+        run: |
+          gatemind run --phase pre_commit --from-git --enforce-exit

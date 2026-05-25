@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# GateMind runtime logs/data
+skills/gatemind/logs/*.jsonl
+skills/gatemind/logs/*.log
+.learnings/*.jsonl
+.learnings/*.md
+
+# IDE
+.vscode/
+.idea/

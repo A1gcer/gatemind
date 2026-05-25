@@ -1,0 +1,11 @@
+title = "GateMind gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allow false positives in docs/examples"
+paths = [
+    '''^docs/''',
+    '''^skills/gatemind/tests/fixtures/'''
+]

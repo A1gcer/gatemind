@@ -1,0 +1,16 @@
+id: gate.action.patch_scope
+name: Patch Scope 门
+category: action
+phase: pre_tool_call
+priority: P3
+severity: medium
+lifecycle:
+  status: shadow
+decision:
+  on_fail: require_user_confirm
+message: "大范围改动前需要先提交变更计划。"
+check:
+  kind: patch_scope_without_plan
+  args:
+    file_threshold: 8
+    line_threshold: 300

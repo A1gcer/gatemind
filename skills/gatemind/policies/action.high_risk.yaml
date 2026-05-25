@@ -1,0 +1,20 @@
+id: gate.action.high_risk_confirm
+name: 高风险操作确认门
+category: action
+phase: pre_tool_call
+priority: P0
+severity: critical
+lifecycle:
+  status: active
+decision:
+  on_fail: block
+message: "高风险操作必须先说明风险、回滚方案并获得确认。"
+check:
+  kind: high_risk_action_without_confirm
+  args:
+    risk_patterns:
+      - "rm\\s+-rf"
+      - "chmod\\s+777"
+      - "DROP\\s+TABLE"
+      - "开放公网"
+      - "sudo"

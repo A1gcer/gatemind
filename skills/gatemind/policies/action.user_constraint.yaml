@@ -1,0 +1,14 @@
+id: gate.action.user_constraints
+name: 用户约束一致性门
+category: action
+phase: pre_tool_call
+priority: P1
+severity: high
+lifecycle:
+  status: active
+decision:
+  on_fail: require_user_confirm
+message: "执行前必须检查是否违反用户明确约束。"
+check:
+  kind: constraint_violation_simple
+  args: {}

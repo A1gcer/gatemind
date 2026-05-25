@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GateMind Policy Schema",
+  "type": "object",
+  "required": ["id", "name", "phase", "priority", "lifecycle", "decision", "check"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^gate\\.[a-z0-9_.-]+$" },
+    "name": { "type": "string", "minLength": 1 },
+    "category": { "type": "string" },
+    "phase": { "type": "string", "enum": ["pre_response", "pre_tool_call", "pre_commit", "post_session_audit"] },
+    "priority": { "type": "string", "enum": ["P0", "P1", "P2", "P3", "P4", "P5"] },
+    "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+    "lifecycle": { "type": "object", "required": ["status"], "properties": { "status": { "type": "string", "enum": ["candidate", "shadow", "active", "deprecated"] } }, "additionalProperties": true },
+    "decision": { "type": "object", "required": ["on_fail"], "properties": { "on_fail": { "type": "string", "enum": ["allow", "warn", "require_evidence", "require_user_confirm", "block"] } }, "additionalProperties": true },
+    "message": { "type": "string" },
+    "check": { "type": "object", "required": ["kind"], "properties": { "kind": { "type": "string" }, "args": { "type": "object" } }, "additionalProperties": true },
+    "meta": { "type": "object" }
+  },
+  "additionalProperties": true
+}

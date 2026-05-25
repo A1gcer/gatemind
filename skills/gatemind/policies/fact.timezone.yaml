@@ -1,0 +1,16 @@
+id: gate.fact.timezone_required
+name: 时间时区检查
+category: fact
+phase: pre_response
+priority: P2
+severity: medium
+lifecycle:
+  status: active
+decision:
+  on_fail: require_evidence
+message: "涉及时间信息时必须给出时区或明确默认时区。"
+check:
+  kind: time_without_timezone
+  args:
+    time_words: ["今天", "明天", "现在", "时间", "today", "now"]
+    timezone_words: ["UTC", "CST", "北京时间", "Asia/Shanghai", "时区"]

@@ -1,0 +1,24 @@
+id: gate.repo.public_safety
+name: 公共仓安全红线门
+category: repo
+phase: pre_commit
+priority: P0
+severity: critical
+lifecycle:
+  status: active
+decision:
+  on_fail: block
+message: "公共仓禁止提交敏感目录、分发脚本和私有资产。"
+check:
+  kind: repo_forbidden_paths
+  args:
+    apply_repo_types: ["public"]
+    forbidden_regex:
+      - "^distribution/"
+      - "^config/feishu_field_map\\.json$"
+      - "^scripts/(build-distribution\\.py|build-distribution-index\\.py|validate-distribution\\.py)$"
+      - "^\\.github/workflows/distribution-ci\\.yml$"
+      - "^(drafts/|analytics/|feishu/)"
+      - "\\.env$"
+      - "\\.csv$"
+      - "\\.xlsx$"

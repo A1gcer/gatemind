@@ -1,0 +1,15 @@
+id: gate.intent.long_document_confirm
+name: 长文档意图确认门
+category: intent
+phase: pre_response
+priority: P1
+severity: high
+lifecycle:
+  status: active
+decision:
+  on_fail: require_user_confirm
+message: "用户贴长文档时需先确认意图（评审/总结/重构/执行）。"
+check:
+  kind: long_document_without_intent
+  args:
+    length_threshold: 800
