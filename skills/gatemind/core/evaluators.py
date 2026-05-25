@@ -87,9 +87,13 @@ def _repo_secret_scan(ctx: dict, args: dict) -> tuple[bool, str]:
         r"AKIA[0-9A-Z]{16}",
         r"(?i)api[_-]?key\s*[:=]\s*['\"][^'\"]+",
     ])
+    exclude_paths = args.get("exclude_paths", [])
     file_contents = ctx.get("file_contents", {}) or {}
     bad = []
     for path, content in file_contents.items():
+        # 跳过白名单路径
+        if any(re.search(ep, path) for ep in exclude_paths):
+            continue
         for p in patterns:
             if re.search(p, content or ""):
                 bad.append(path)
